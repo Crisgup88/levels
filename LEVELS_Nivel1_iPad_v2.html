@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>LEVELS — Nivel 1</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#07101d;color:#fff}
+button{font:inherit;border:0;touch-action:manipulation}
+.screen{display:none;width:100%;height:100%;align-items:center;justify-content:center;padding:24px}
+.screen.on{display:flex}.panel{width:min(720px,94vw);padding:30px;border-radius:28px;text-align:center;background:#111c30ee;border:1px solid #ffffff26;box-shadow:0 18px 60px #0009}
+h1{font-size:clamp(48px,12vw,88px);letter-spacing:7px;margin:0 0 2px}.gold{color:#f3d88a}.muted{color:#c7d2ec}
+.btn{display:block;width:min(420px,90%);margin:12px auto;padding:17px;border-radius:17px;background:#f3d88a;color:#17120a;font-weight:900}
+.btn.alt{background:#34445f;color:#fff}
+#game{display:none;position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(#668bb0 0 39%,#6e8b55 39% 100%)}
+#game.on{display:block}
+#world{position:absolute;inset:0;transform-origin:center}
+.path{position:absolute;background:#c5aa79;border-radius:50%}
+.p1{width:76%;height:13%;left:12%;top:53%;transform:rotate(-8deg)}
+.p2{width:16%;height:60%;left:58%;top:35%;transform:rotate(12deg)}
+.lake{position:absolute;width:42%;height:23%;right:7%;bottom:8%;background:#3d87a5;border:5px solid #b9dce0;border-radius:50%}
+.house{position:absolute;width:19%;height:15%;left:8%;bottom:22%;background:#9a7258;border-radius:10px}.house:before{content:"";position:absolute;left:-10%;top:-48%;border-left:60px solid transparent;border-right:60px solid transparent;border-bottom:55px solid #604044}
+.church{position:absolute;width:14%;height:22%;right:11%;top:13%;background:#e5dfce;border-radius:8px}.tower{position:absolute;width:35%;height:55%;left:33%;top:-40%;background:#ded7c4}.church:after{content:"✝";position:absolute;left:39%;top:-74%;font-size:40px}
+.tree{position:absolute;font-size:clamp(38px,6vw,70px)}
+.zone{position:absolute;border:2px dashed #ffffff40;border-radius:20px;padding:10px;background:#15203855;text-align:center;font-weight:800}
+#plaza{left:35%;top:44%;width:29%;height:20%}#forest{left:5%;top:9%;width:28%;height:27%}#market{left:5%;bottom:8%;width:25%;height:15%}
+#player{position:absolute;left:48%;top:55%;font-size:48px;z-index:5;transition:left .18s,top .18s}
+.hud{position:absolute;z-index:20;top:max(10px,env(safe-area-inset-top));left:10px;right:10px;display:flex;justify-content:space-between;gap:8px}.pill{background:#0a1324dd;border:1px solid #ffffff25;border-radius:15px;padding:8px 11px;font-size:12px}
+.joy{position:absolute;z-index:30;left:18px;bottom:max(18px,env(safe-area-inset-bottom));width:154px;height:154px;border-radius:50%;background:#0b1527aa;border:2px solid #ffffff2e;display:flex;align-items:center;justify-content:center}
+.joy button{position:absolute;width:52px;height:52px;border-radius:50%;background:#f3d88acc;color:#17120a;font-weight:900;font-size:23px}
+.up{top:7px}.down{bottom:7px}.left{left:7px}.right{right:7px}
+.center{background:#ffffff22!important;color:#fff!important}
+.dialog{position:absolute;z-index:40;left:4%;right:4%;bottom:max(14px,env(safe-area-inset-bottom));padding:18px;border-radius:22px;background:#0c1528f5;border:1px solid #ffffff33;display:none}.dialog.show{display:block}.dname{font-weight:900;color:#f3d88a;margin-bottom:5px}.choices{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.choices button{flex:1;min-width:130px;padding:12px;border-radius:13px;background:#354766;color:#fff}
+.toast{position:absolute;z-index:35;top:80px;left:50%;transform:translateX(-50%);background:#0b1527ed;border-radius:14px;padding:10px 15px;display:none;white-space:nowrap}
+.note{font-size:13px;color:#9eacc6}
+</style>
+</head>
+<body>
+<section id="menu" class="screen on"><div class="panel">
+<div class="gold" style="font-size:15px;font-weight:800;letter-spacing:4px">UNA AVENTURA DE FE</div>
+<h1>LEVELS</h1><div class="muted">CAMINO A LA ETERNIDAD</div>
+<p>Prototipo para iPad · Nivel 1: <b>El Llamado</b></p>
+<button class="btn" onclick="showIntro()">▶ JUGAR</button>
+<div class="note">Diseñado para tocar la pantalla.</div>
+</div></section>
+
+<section id="intro" class="screen"><div class="panel">
+<h2>🌅 NIVEL 1 — EL LLAMADO</h2>
+<p>Lumen parece una ciudad normal. Hoy, sin embargo, algo está diferente.</p>
+<p class="gold"><i>“El camino comienza con una decisión.”</i></p>
+<button class="btn" onclick="begin()">ENTRAR EN LUMEN</button>
+</div></section>
+
+<div id="game">
+<div class="hud"><div class="pill">❤️ Fe <b id="faith">0</b> · 🤝 Servicio <b id="service">0</b></div><div class="pill">⭐ XP <b id="xp">0</b></div></div>
+<div id="world">
+<div class="path p1"></div><div class="path p2"></div><div class="lake"></div><div class="house"></div><div class="church"><div class="tower"></div></div>
+<div class="zone" id="plaza">🏘️ PLAZA</div><div class="zone" id="forest">🌲 BOSQUE</div><div class="zone" id="market">🛍️ MERCADO</div>
+<div class="tree" style="left:38%;top:8%">🌳</div><div class="tree" style="left:69%;top:8%">🌲</div><div class="tree" style="left:79%;top:55%">🌳</div>
+<div id="player">🧍</div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="joy">
+<button class="up" onclick="move(0,-1)">▲</button><button class="down" onclick="move(0,1)">▼</button><button class="left" onclick="move(-1,0)">◀</button><button class="right" onclick="move(1,0)">▶</button><button class="center" onclick="interact()">●</button>
+</div>
+<div class="dialog" id="dialog"><div class="dname" id="dname">Elena</div><div id="dtext"></div><div class="choices" id="choices"></div></div>
+</div>
+
+<section id="end" class="screen"><div class="panel">
+<h2>✨ NIVEL COMPLETADO</h2><h3>EL LLAMADO</h3><div id="final"></div>
+<p class="gold">“Escucharme fue el comienzo.”</p>
+<button class="btn" onclick="location.reload()">VOLVER AL MENÚ</button>
+</div></section>
+
+<script>
+let x=48,y=55,faith=0,service=0,xp=0,forest=false,started=false;
+const $=id=>document.getElementById(id);
+function screen(id){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('on'));$(id).classList.add('on')}
+function showIntro(){screen('intro')}
+function begin(){screen('menu');$('menu').classList.remove('on');$('game').classList.add('on');started=true;toast('Toca las flechas para explorar Lumen.');}
+function move(dx,dy){if(!started)return;x=Math.max(3,Math.min(94,x+dx*4));y=Math.max(8,Math.min(88,y+dy*4));$('player').style.left=x+'%';$('player').style.top=y+'%';checkNear()}
+function checkNear(){
+if(x<38&&y<42)toast('🌲 Estás cerca del bosque');
+if(x>60&&y>65)toast('💧 Estás cerca del lago');
+if(x>38&&x<64&&y>44&&y<68)toast('🏘️ Plaza: busca a Elena');
+}
+function toast(t){$('toast').textContent=t;$('toast').style.display='block';clearTimeout(window.tt);window.tt=setTimeout(()=>$('toast').style.display='none',1800)}
+function interact(){
+if(x<38&&y<42){forestEvent();return}
+if(x>60&&y>65){lakeEvent();return}
+if(x>38&&x<64&&y>44&&y<68){elena();return}
+toast('Explora Lumen y busca pistas.');
+}
+function dlg(name,text,buttons){$('dname').textContent=name;$('dtext').textContent=text;$('choices').innerHTML='';buttons.forEach(b=>{let q=document.createElement('button');q.textContent=b[0];q.onclick=b[1];$('choices').appendChild(q)});$('dialog').classList.add('show')}
+function closeDlg(){$('dialog').classList.remove('show')}
+function elena(){dlg('Elena','Bienvenido a Lumen. Hay un llamado que quizá aún no has escuchado.',[['¿Qué llamado?',()=>{faith++;xp+=10;sync();dlg('Elena','No puedo explicártelo por ti. Detente, escucha y busca la verdad.',[['Seguir explorando',closeDlg]])}],['Luego vuelvo',closeDlg]])}
+function forestEvent(){forest=true;faith++;xp+=15;sync();dlg('La voz','¿Me estás buscando?', [['Seguir la voz',()=>{closeDlg();toast('💧 Una pista te lleva hacia el lago.')}],['Volver',closeDlg]])}
+function lakeEvent(){if(!forest){toast('🌲 Primero encuentra la pista del bosque.');return}dlg('La voz','Te he llamado. El camino comienza con una decisión.',[['¿Quién eres?',answer],['¿Por qué me llamas?',answer]])}
+function answer(){faith+=2;xp+=25;sync();dlg('La voz','Tu camino acaba de comenzar.',[['Responder al llamado',finish]])}
+function sync(){$('faith').textContent=faith;$('service').textContent=service;$('xp').textContent=xp}
+function finish(){closeDlg();$('game').classList.remove('on');$('final').innerHTML=`❤️ Fe: ${faith}<br>🤝 Servicio: ${service}<br>⭐ XP: ${xp}<br><br>🔓 <b>Nivel 2 desbloqueado: Arrepentimiento</b>`;screen('end')}
+document.addEventListener('touchstart',e=>{if(e.target.tagName==='BUTTON')e.preventDefault()},{passive:false});
+</script>
+</body>
+</html>
